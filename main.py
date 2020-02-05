@@ -34,7 +34,7 @@ def get_patient_data(page):
         for row in rows:
             cols = row.find_all('td')
             if len(cols) >= 2:
-                if cols[0].text.strip() == 'Age':  # TODO: handle not string
+                if cols[0].text.strip() == 'Age':
                     age = cols[1].text.strip()
                 if cols[0].text.strip() == 'Occupation':
                     occupation = cols[1].text.strip()
@@ -43,12 +43,7 @@ def get_patient_data(page):
 
     return age, occupation, death
 ############# House Info
-
-### Doctors
-
-
-### Diganoses
-def main():
+def house_data():
     page = requests.get("https://house.fandom.com/wiki/List_of_medical_diagnoses")
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -126,7 +121,91 @@ def main():
         seasons[seasonNumber] = episodes
 
     json_data = json.dumps(seasons)
-    print(json_data)
+    return json_data
+    #print(json_data)
+
+### Actors
+def get_actor_data(page):
+    actor_data = {}
+    #age = 'Unknown'
+    #occupation = 'Unknown'
+
+    age_soup = BeautifulSoup(page.content, 'html.parser')
+    age_table_div = age_soup.find('div', attrs={'id': 'mw-content-text'})
+    age_table = age_table_div.find('table')
+    if age_table:
+        rows = age_table.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) >= 2:
+                if cols[0].text.strip() == 'Born':
+                    actor_data['birthday'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Birthplace':
+                    actor_data['birthplace'] = cols[1].text.strip()
+    return actor_data
+
+### Doctors
+def get_doctor_data(page):
+    doctor_data = {}
+    #age = 'Unknown'
+    #occupation = 'Unknown'
+
+    age_soup = BeautifulSoup(page.content, 'html.parser')
+    age_table_div = age_soup.find('div', attrs={'id': 'mw-content-text'})
+    age_table = age_table_div.find('table')
+    if age_table:
+        rows = age_table.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) >= 2:
+                if cols[0].text.strip() == 'Name':
+                    doctor_data['name'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Age':
+                    doctor_data['age'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Marital Status':
+                    doctor_data['marital status'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Occupation':
+                    doctor_data['occupation'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Date of Death':
+                    doctor_data['death'] = cols[1].text.strip()
+                if cols[0].text.strip() == 'Actor':
+                    actor_link = cols[1].find('a')
+                    if actor_link.has_attr('href'):
+                        actor_data = get_actor_data(requests.get('https://house.fandom.com/' + actor_link.attrs['href']))
+                    actor_data['actor name'] = cols[1].text.strip()
+                    doctor_data['actor'] = actor_data
+
+    return doctor_data
+
+def get_house_doctors():
+    page = requests.get("https://house.fandom.com/wiki/House_Wiki")
+    soup = BeautifulSoup(page.content, 'html.parser')
+
+    doctor_link_list = []
+    doctor_data = {}
+    doctors = {}
+
+    doctors_div = soup.find('div', attrs={'class': "lcs-container"})
+    doctors_table = doctors_div.find_all('table', attrs={'cellspacing': '4'})
+    for doctor_table in doctors_table:
+        doctors_links = doctor_table.find_all('a')
+        for doctor_link in doctors_links:
+            if doctor_link.has_attr('href'):
+                doctor_link_list.append(doctor_link.attrs['href'])
+    doctor_link_list = list(dict.fromkeys(doctor_link_list))
+
+    for doctor_link in doctor_link_list:
+        doctor_page = requests.get('https://house.fandom.com/' + doctor_link)
+        doctor_data = get_doctor_data(doctor_page)
+        doctor_data['gender'] = get_gender(doctor_page)
+        doctors[doctor_data['name']] = doctor_data
+
+    print(json.dumps(doctors))
+
+### Diganoses
+def main():
+    #print(house_data())
+    get_house_doctors()
 
 if __name__ == "__main__":
     main()
