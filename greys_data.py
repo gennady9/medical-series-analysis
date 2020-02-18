@@ -6,7 +6,7 @@ import requests
 
 def get_episode_data(page):
     episode_data = {}
-    patients_data = {}
+    patients_data = []
 
     soup = BeautifulSoup(page.content, 'html.parser')
     data_div = soup.find('div', attrs={'id': "mw-content-text"})
@@ -38,7 +38,7 @@ def get_episode_data(page):
         patient_h3_span = patient_h3.find('span', attrs={'class': "mw-headline"})
 
         patient_link = patient_h3_span.find('a')
-        patient_data['name'] = html.unescape(patient_h3_span.attrs['id']).replace("_", " ").replace(".27","'")
+        patient_data['name'] = html.unescape(patient_h3_span.attrs['id']).replace("_", " ").replace(".27", "'")
         if patient_link and patient_link.has_attr('href'):
             patient_data['patient url'] = patient_link.attrs['href']
         # getting treatment list
@@ -49,9 +49,11 @@ def get_episode_data(page):
             patient_data['treatment'] = patient_treatment
             treatment_text = treatment_text.find_next(text="Treatment:")
         # iterating to next
-        patients_data[patient_data['name']] = patient_data
+        #patients_data[patient_data['name']] = patient_data
+        patients_data.append(patient_data)
     return patients_data
-    #print(json.dumps(patients_data))
+    # print(json.dumps(patients_data))
+
 
 def get_season_from_table(season_table):
     season_dict = []
@@ -60,12 +62,14 @@ def get_season_from_table(season_table):
     episodes_links = season_table.find_all('a')
     for episode_link in episodes_links:
         if episode_link.has_attr('href'):
-            episode_dict = get_episode_data(requests.get('https://greysanatomy.fandom.com/' + episode_link.attrs['href']))
+            episode_dict = {}
+            episode_dict['patients'] = get_episode_data(requests.get('https://greysanatomy.fandom.com/' + episode_link.attrs['href']))
             episode_dict['episode name'] = episode_link.text.strip()
             episode_dict['episode number'] = str(episode_number)
             season_dict.append(episode_dict)
             episode_number += 1
     return season_dict
+
 
 def greys_data():
     seasons_page = requests.get("https://greysanatomy.fandom.com/wiki/Grey%27s_Anatomy_Episodes")
@@ -75,6 +79,6 @@ def greys_data():
     season_number = 1
     for season_table in seasons_tables:
         seasons_dict[season_number] = get_season_from_table(season_table)
-        print(seasons_dict[season_number])
+        # print(seasons_dict[season_number])
         season_number += 1
-    print(json.dumps(seasons_dict))
+    return seasons_dict

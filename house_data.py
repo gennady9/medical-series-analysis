@@ -116,8 +116,7 @@ def house_data():
             episodes.append(data)
         seasons[seasonNumber] = episodes
 
-    json_data = json.dumps(seasons)
-    return json_data
+    return seasons
     #print(json_data)
 
 ### Actors
