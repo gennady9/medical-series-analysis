@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 from selenium.common.exceptions import NoSuchElementException
 
+gecko_path = "D:/dhp/geckodriver.exe"
 
 def orpha_scrape(link):
     disease_dict = {}
@@ -30,7 +31,7 @@ def get_malacard_data(urlpage):
     #urlpage = url_prefix + disease_name
     print(urlpage)
     # run firefox webdriver from executable path of your choice
-    driver = webdriver.Firefox(executable_path='C:/dhp/geckodriver.exe')
+    driver = webdriver.Firefox(executable_path=gecko_path)
 
     # get web page
     driver.get(urlpage)
@@ -48,7 +49,10 @@ def get_disease_table_link(disease_list):
 
     disease_result_list = []
     # run firefox webdriver from executable path of your choice
-    driver = webdriver.Firefox(executable_path='C:/dhp/geckodriver.exe')
+    driver = webdriver.Firefox(executable_path=gecko_path)
+
+    progress = 0
+    diseases_len = len(disease_list)
 
     url_prefix = 'https://www.malacards.org/search/results?query='
     for disease_name in disease_list:
@@ -71,8 +75,10 @@ def get_disease_table_link(disease_list):
             # append dict to array
             disease_data = ({"disease": disease_name, "link": disease_link})
         disease_result_list.append(disease_data)
+        progress += 1
+        print("[" + str(progress) +"/" + str(diseases_len) + "]" + "disease = " + disease_name)
     driver.quit()
-    print(disease_result_list)
+    return disease_result_list
     #return disease_data
     #
     #    print(soup)

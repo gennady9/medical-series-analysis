@@ -41,13 +41,13 @@ def main():
         greys_data_output = json.load(json_file)
     with open('results/house_json.txt') as json_file:
         house_data_output = json.load(json_file)
-    temp_table = ["Excessive bleeding post-root canal"]
-    #diseases_table = get_diseases_table(greys_data_output, house_data_output)
+    #temp_table = ["Excessive bleeding post-root canal"]
+    diseases_table = get_diseases_table(greys_data_output, house_data_output)
     #part_table = diseases_table[1:10]
     #disease_data.get_disease_table_link(part_table)
 
     if not path.exists("results/malacards_links.txt"):
-        malacard_output = disease_data.get_disease_table_link(temp_table)
+        malacard_output = disease_data.get_disease_table_link(diseases_table)
         with open('results/malacards_links.txt', 'w') as outfile:
             json.dump(malacard_output, outfile)
     #with open('results/malacards_links.txt') as json_file:
