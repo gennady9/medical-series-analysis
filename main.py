@@ -46,22 +46,23 @@ def main():
     #part_table = diseases_table[1:10]
     #disease_data.get_disease_table_link(part_table)
 
+    # getting matching disease link using malacard search
     if not path.exists("results/malacards_links.txt"):
         malacard_output = disease_data.get_disease_table_link(diseases_table)
         with open('results/malacards_links.txt', 'w') as outfile:
             json.dump(malacard_output, outfile)
-    #with open('results/malacards_links.txt') as json_file:
-    #    malacard_links = json.load(json_file)
+    with open('results/malacards_links.txt') as json_file:
+        malacard_links_list = json.load(json_file)
+
+    #temp_part_malacard_list = malacard_links_list[40:50]
+
+    # getting malacard disease info using malacard link
+    if not path.exists("results/malacards_links_extended.txt"):
+        malacard_extended_output = disease_data.get_all_malacard_data(malacard_links_list)
+        with open('results/malacards_links_extended.txt', 'w') as outfile:
+            json.dump(malacard_extended_output, outfile)
 
 
-    #disease_data.get_malacard_data("https://www.malacards.org/card/ornithine_transcarbamylase_deficiency_hyperammonemia_due_to")
-
-
-
-    #print(disease_data.orpha_scrape("https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&Expert=664"))
-
-    #disease_data.malacard_scrape("https://www.malacards.org/card/cysticercosis")
-    #print(disease_data.get_all_disease_data(temp_table))
 
 
 if __name__ == "__main__":

@@ -117,7 +117,6 @@ def house_data():
         seasons[seasonNumber] = episodes
 
     return seasons
-    #print(json_data)
 
 ### Actors
 def get_actor_data(page):
