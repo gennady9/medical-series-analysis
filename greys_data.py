@@ -10,15 +10,6 @@ def get_episode_data(page):
 
     soup = BeautifulSoup(page.content, 'html.parser')
     data_div = soup.find('div', attrs={'id': "mw-content-text"})
-    # = data_div.find_next("h2")
-    '''
-    h2_headline = data_div.find_next("h2")
-    while h2_headline is not None:
-        if h2_headline.find('span', attrs={'id': "Medical_Notes"}):
-            break
-        else:
-            h2_headline = h2_headline.find_next("h2")
-    '''
     diagnose_text = soup.find(text="Diagnosis:")
     treatment_text = soup.find(text="Treatment:")
     while diagnose_text is not None:
@@ -49,15 +40,12 @@ def get_episode_data(page):
             patient_data['treatment'] = patient_treatment
             treatment_text = treatment_text.find_next(text="Treatment:")
         # iterating to next
-        #patients_data[patient_data['name']] = patient_data
         patients_data.append(patient_data)
     return patients_data
-    # print(json.dumps(patients_data))
 
 
 def get_season_from_table(season_table):
     season_dict = []
-    episode_dict = {}
     episode_number = 1
     episodes_links = season_table.find_all('a')
     for episode_link in episodes_links:
@@ -79,6 +67,5 @@ def greys_data():
     season_number = 1
     for season_table in seasons_tables:
         seasons_dict[season_number] = get_season_from_table(season_table)
-        # print(seasons_dict[season_number])
         season_number += 1
     return seasons_dict

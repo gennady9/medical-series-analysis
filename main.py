@@ -2,7 +2,6 @@ import house_data
 import greys_data
 import disease_data
 import json
-import os.path
 from os import path
 
 def get_diseases_table(greys_output, house_ouput):
@@ -27,7 +26,6 @@ def get_diseases_table(greys_output, house_ouput):
 
 
 def main():
-    #temp_table = ["Neurocysticercosis", "Small-cell lung cancer"]
 
     if not path.exists("results/greys_json.txt"):
         greys_json = greys_data.greys_data()
@@ -41,10 +39,7 @@ def main():
         greys_data_output = json.load(json_file)
     with open('results/house_json.txt') as json_file:
         house_data_output = json.load(json_file)
-    #temp_table = ["Excessive bleeding post-root canal"]
     diseases_table = get_diseases_table(greys_data_output, house_data_output)
-    #part_table = diseases_table[1:10]
-    #disease_data.get_disease_table_link(part_table)
 
     # getting matching disease link using malacard search
     if not path.exists("results/malacards_links.txt"):
@@ -53,8 +48,6 @@ def main():
             json.dump(malacard_output, outfile)
     with open('results/malacards_links.txt') as json_file:
         malacard_links_list = json.load(json_file)
-
-    #temp_part_malacard_list = malacard_links_list[40:50]
 
     # getting malacard disease info using malacard link
     if not path.exists("results/malacards_links_extended.txt"):

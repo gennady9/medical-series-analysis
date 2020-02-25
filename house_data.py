@@ -121,8 +121,6 @@ def house_data():
 ### Actors
 def get_actor_data(page):
     actor_data = {}
-    #age = 'Unknown'
-    #occupation = 'Unknown'
 
     age_soup = BeautifulSoup(page.content, 'html.parser')
     age_table_div = age_soup.find('div', attrs={'id': 'mw-content-text'})
@@ -141,8 +139,6 @@ def get_actor_data(page):
 ### Doctors
 def get_doctor_data(page):
     doctor_data = {}
-    #age = 'Unknown'
-    #occupation = 'Unknown'
 
     age_soup = BeautifulSoup(page.content, 'html.parser')
     age_table_div = age_soup.find('div', attrs={'id': 'mw-content-text'})

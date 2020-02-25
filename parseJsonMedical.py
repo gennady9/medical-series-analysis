@@ -11,8 +11,9 @@ import pprint
 def main():
 
 	#file must be in working dir
-	parseHouseFile("house_json.txt")
-	getDieasesfromMalacars("malacards_links_extended.txt")
+	# parseHouseFile("house_json.txt")
+	# getDieasesfromMalacars('house',"malacards_link_house.txt")
+	getDieasesfromMalacars('grey',"malacards_links_grey.txt")
 def parseHouseFile(path):
 	class Season:
 		def __init__(self,season_num):
@@ -78,7 +79,7 @@ def createAgaBarArray(age_list):
 	plt.legend()
 
 	plt.tight_layout()
-	plt.show()
+	# plt.show()
 
 
 def createFemaleMalebar(seasons_num,Seasons):
@@ -111,6 +112,7 @@ def createFemaleMalebar(seasons_num,Seasons):
 
 	plt.tight_layout()
 	plt.savefig('gender.png', bbox_inches='tight')
+	plt.cla()
 
 def createDict_sorted_by_occurrences(Diseases_list):
 	Dieases = {}
@@ -121,7 +123,7 @@ def createDict_sorted_by_occurrences(Diseases_list):
 			Dieases[d] = 1 
 	d = {k: v for k, v in sorted(Dieases.items(), key=lambda item: item[1],reverse= True)}
 	return d
-def createPieChartForCatgory(category_dict):
+def createPieChartForCatgory(tv_show,category_dict):
 	values = [float(v) for v in category_dict.values()]
 	labels = [str(k).replace('diseases','') for k in category_dict.keys()]
 	fig = plt.gcf()
@@ -130,13 +132,14 @@ def createPieChartForCatgory(category_dict):
 	autopct='%1.1f%%', shadow=False, startangle=190,labeldistance = 1.1,pctdistance = 0.75,radius = 1)
 	plt.axis('equal')
 	plt.tight_layout()
-	plt.savefig('categorychart.png', bbox_inches='tight')
+	# plt.show()
+	plt.savefig('categorychart_{}.png'.format(tv_show), bbox_inches='tight')
 
 
-def createTableforDieasesOcuureances(Dieases_dict):
+def createTableforDieasesOcuureances(tv_show,Dieases_dict):
 	df = pd.DataFrame(data=Dieases_dict,index=[0])
 	df = df.fillna(' ').T
-	with open('DieasesByOccurrences.html','w') as html_file:
+	with open('DieasesByOccurrences_{}.html'.format(tv_show),'w') as html_file:
 		html_file.write(df.to_html())
 	html_file.close()
 
@@ -147,7 +150,7 @@ def getCatagoryList(data):
 	return [z['category'] for z in data if 'category' in z]
 
 def getDieaseswithPrevelance_and_Age_of_onset(data):
-	Dieases_prevalence_age_of_onset = [(x['disease'],x['orpha_data']['prevalence'],x['orpha_data']['age_of_onset'])
+	Dieases_prevalence_age_of_onset = [('<a href="{}">{}</a>'.format(x['link'],x['disease']),x['orpha_data']['prevalence'],x['orpha_data']['age_of_onset'])
 	for x in data if 'orpha_data' in x and x['orpha_data'] != {}]
 	q = Dieases_prevalence_age_of_onset[:]
 	filter(lambda x: q.remove(x) is None and g.count ==0,Dieases_prevalence_age_of_onset)
@@ -172,14 +175,14 @@ def filterDieases(Dieases_table):
 			r[a] = [prevalence,c]
 	return r
 
-def createTablePrevenalceandAge(Dieases_dict):
+def createTablePrevenalceandAge(tv_show,Dieases_dict):
 	df = pd.DataFrame(data=Dieases_dict)
 	df = df.fillna(' ').T
-	with open('TablePrevenalceandAge.html','w') as html_file:
-		html_file.write(df.to_html())
+	with open('TablePrevenalceandAge_{}.html'.format(tv_show),'w') as html_file:
+		html_file.write(df.to_html(escape =False))
 	html_file.close()
 
-def getDieasesfromMalacars(path):
+def getDieasesfromMalacars(tv_show,path):
 	with open(path) as datafile:
 		data = json.loads(datafile.read())
 		Diseases_list = getDiesesList(data)
@@ -187,15 +190,13 @@ def getDieasesfromMalacars(path):
 		Dieases_prevalence_age_of_onset = getDieaseswithPrevelance_and_Age_of_onset(data)
 		i,j,k = 0,0,0
 		pp = pprint.PrettyPrinter(indent = 4)
-		# print('Dieases with prevalence and age_of_onset =',i,',only prevalence =' ,j,',only age_of_onse =',k)
-		# pp.pprint(filterDieases(Dieases_prevalence_age_of_onset))
 		Dict =(filterDieases(Dieases_prevalence_age_of_onset))
-		createTablePrevenalceandAge(Dict)
+		createTablePrevenalceandAge(tv_show,Dict)
 		Catagory_list_flatten = list(itertools.chain(*Catagory_list))
 		Dieases_dict = createDict_sorted_by_occurrences(Diseases_list)
 		category_dict = createDict_sorted_by_occurrences(Catagory_list_flatten)
-		createPieChartForCatgory(category_dict)
-		createTableforDieasesOcuureances(Dieases_dict)	
+		createPieChartForCatgory(tv_show,category_dict)
+		createTableforDieasesOcuureances(tv_show,Dieases_dict)	
 	datafile.close()
 
 
