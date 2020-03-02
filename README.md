@@ -1,2 +1,3 @@
-# Analysing House series data and generating insights
-## mini project for Digital humanities course
+# Analyzing House series data and generating insights
+## Digital humanities mini project
+Insights: https://rohiza8.wixsite.com/digitalhumanities
